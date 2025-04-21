@@ -1,6 +1,16 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { PaisModule } from './pais/pais.module';
+import { CiudadModule } from './ciudad/ciudad.module';
+import { TipoApartamentoModule } from './tipo-apartamento/tipo-apartamento.module';
+import { ApartamentoModule } from './apartamento/apartamento.module';
+import { TipoApartamento } from './tipo-apartamento/entities/tipo-apartamento.entity';
+import { Pais } from './pais/entities/pais.entity';
+import { Ciudad } from './ciudad/entities/ciudad.entity';
+import { Apartamento } from './apartamento/entities/apartamento.entity';
+import { TarifaModule } from './tarifa/tarifa.module';
+import { TipoTarifaModule } from './tipo-tarifa/tipo-tarifa.module';
 
 @Module({
   imports: [
@@ -19,9 +29,15 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
         database: config.get('DB_NAME'),
         autoLoadEntities: true,
         synchronize: true,
-        entities: [__dirname + '/../**/*.entity{.ts,.js}'],
+        entities: [TipoApartamento, Pais, Ciudad, Apartamento],
       }),
     }),
+    PaisModule,
+    CiudadModule,
+    TipoApartamentoModule,
+    ApartamentoModule,
+    TarifaModule,
+    TipoTarifaModule,
   ],
 })
 export class AppModule {}
