@@ -11,7 +11,8 @@ import { Ciudad } from './ciudad/entities/ciudad.entity';
 import { Apartamento } from './apartamento/entities/apartamento.entity';
 import { TarifaModule } from './tarifa/tarifa.module';
 import { TipoTarifaModule } from './tipo-tarifa/tipo-tarifa.module';
-import { Propiedad } from './propiedades/entities/propiedad.entity';
+import { Propiedad } from './propiedad/entities/propiedad.entity';
+import { PropiedadModule } from './propiedad/propiedad.module';
 
 @Module({
   imports: [
@@ -28,16 +29,15 @@ import { Propiedad } from './propiedades/entities/propiedad.entity';
         username: config.get('DB_USERNAME'),
         password: config.get('DB_PASSWORD'),
         database: config.get('DB_NAME'),
-        autoLoadEntities: true,
         synchronize: false,
         entities: [TipoApartamento, Pais, Ciudad, Apartamento],
       }),
     }),
     TypeOrmModule.forRootAsync({
+      name: 'secondDB',
       imports: [ConfigModule],
       inject: [ConfigService],
       useFactory: (config: ConfigService) => ({
-        name: 'secondConnection',
         type: 'mysql',
         host: config.get('DB2_HOST'),
         port: config.get<number>('DB2_PORT'),
@@ -45,7 +45,7 @@ import { Propiedad } from './propiedades/entities/propiedad.entity';
         password: config.get('DB2_PASSWORD'),
         database: config.get('DB2_NAME'),
         synchronize: true,
-        entities: [Propiedad]
+        entities: [Propiedad],
       }),
     }),
     PaisModule,
@@ -54,6 +54,7 @@ import { Propiedad } from './propiedades/entities/propiedad.entity';
     ApartamentoModule,
     TarifaModule,
     TipoTarifaModule,
+    PropiedadModule,
   ],
 })
 export class AppModule {}

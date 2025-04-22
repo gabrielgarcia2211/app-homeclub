@@ -7,7 +7,7 @@ export class Propiedad {
     id: number;
 
     @Column()
-    codigo: string; // debe coincidir con el código del apartamento en BD1
+    codigo: number; // debe coincidir con el código del apartamento en BD1
 
     @Column()
     descripcion: string;
