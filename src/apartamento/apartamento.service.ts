@@ -4,17 +4,35 @@ import { Repository } from 'typeorm';
 import { Apartamento } from './entities/apartamento.entity';
 import { CreateApartamentoDto } from './dto/create-apartamento.dto';
 import { UpdateApartamentoDto } from './dto/update-apartamento.dto';
+import { CiudadService } from 'src/ciudad/ciudad.service';
+import { TipoApartamentoService } from 'src/tipo-apartamento/tipo-apartamento.service';
 
 @Injectable()
 export class ApartamentoService {
   constructor(
     @InjectRepository(Apartamento)
     private readonly apartamentoRepository: Repository<Apartamento>,
+    private readonly ciudadService: CiudadService,
+    private readonly tipoApartamentoService: TipoApartamentoService,
   ) {}
 
   async create(
     createApartamentoDto: CreateApartamentoDto,
   ): Promise<Apartamento> {
+    const ciudad = await this.ciudadService.findOne(
+      createApartamentoDto.id_ciudad,
+    );
+    if (!ciudad) {
+      throw new Error('Ciudad no encontrada');
+    }
+
+    const tipoApartamento = await this.tipoApartamentoService.findOne(
+      createApartamentoDto.id_tipo_apartamento,
+    );
+    if (!tipoApartamento) {
+      throw new Error('Tipo de apartamento no encontrado');
+    }
+
     const apartamento = this.apartamentoRepository.create({
       nombre: createApartamentoDto.nombre,
       direccion: createApartamentoDto.direccion,
@@ -51,10 +69,30 @@ export class ApartamentoService {
     updateApartamentoDto: UpdateApartamentoDto,
   ): Promise<Apartamento> {
     const apartamento = await this.findOne(id);
-    const updated = this.apartamentoRepository.merge(
-      apartamento,
-      updateApartamentoDto,
+
+    const ciudad = await this.ciudadService.findOne(
+      updateApartamentoDto.id_ciudad,
     );
+    if (!ciudad) {
+      throw new Error('Ciudad no encontrada');
+    }
+
+    const tipoApartamento = await this.tipoApartamentoService.findOne(
+      updateApartamentoDto.id_tipo_apartamento,
+    );
+    if (!tipoApartamento) {
+      throw new Error('Tipo de apartamento no encontrado');
+    }
+
+    const updated = this.apartamentoRepository.merge(apartamento, {
+      nombre: updateApartamentoDto.nombre,
+      direccion: updateApartamentoDto.direccion,
+      latitud: updateApartamentoDto.latitud,
+      longitud: updateApartamentoDto.longitud,
+      estado: updateApartamentoDto.estado ?? 'activo',
+      tipoApartamento: { id: updateApartamentoDto.id_tipo_apartamento },
+      ciudad: { id: updateApartamentoDto.id_ciudad },
+    });
     return this.apartamentoRepository.save(updated);
   }
 

@@ -28,7 +28,7 @@ import { TipoTarifaModule } from './tipo-tarifa/tipo-tarifa.module';
         password: config.get('DB_PASSWORD'),
         database: config.get('DB_NAME'),
         autoLoadEntities: true,
-        synchronize: true,
+        synchronize: false,
         entities: [TipoApartamento, Pais, Ciudad, Apartamento],
       }),
     }),
