@@ -15,13 +15,21 @@ export class ApartamentoService {
   async create(
     createApartamentoDto: CreateApartamentoDto,
   ): Promise<Apartamento> {
-    const apartamento = this.apartamentoRepository.create(createApartamentoDto);
+    const apartamento = this.apartamentoRepository.create({
+      nombre: createApartamentoDto.nombre,
+      direccion: createApartamentoDto.direccion,
+      latitud: createApartamentoDto.latitud,
+      longitud: createApartamentoDto.longitud,
+      estado: createApartamentoDto.estado ?? 'activo',
+      tipoApartamento: { id: createApartamentoDto.id_tipo_apartamento },
+      ciudad: { id: createApartamentoDto.id_ciudad },
+    });
     return this.apartamentoRepository.save(apartamento);
   }
 
   async findAll(): Promise<Apartamento[]> {
     return this.apartamentoRepository.find({
-      relations: ['tipoApartamento', 'ciudad'], 
+      relations: ['tipoApartamento', 'ciudad'],
     });
   }
 
@@ -43,7 +51,10 @@ export class ApartamentoService {
     updateApartamentoDto: UpdateApartamentoDto,
   ): Promise<Apartamento> {
     const apartamento = await this.findOne(id);
-    const updated = Object.assign(apartamento, updateApartamentoDto);
+    const updated = this.apartamentoRepository.merge(
+      apartamento,
+      updateApartamentoDto,
+    );
     return this.apartamentoRepository.save(updated);
   }
 
