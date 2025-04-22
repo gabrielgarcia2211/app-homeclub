@@ -121,6 +121,9 @@ export class PropiedadService {
 
   async remove(id: number): Promise<void> {
     const propiedad = await this.findOne(id);
+    if (propiedad.imagen_url) {
+      this.filesService.deleteFile(propiedad.imagen_url);
+    }
     await this.propiedadRepository.remove(propiedad);
   }
 }
