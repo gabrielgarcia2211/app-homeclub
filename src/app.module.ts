@@ -11,6 +11,7 @@ import { Ciudad } from './ciudad/entities/ciudad.entity';
 import { Apartamento } from './apartamento/entities/apartamento.entity';
 import { TarifaModule } from './tarifa/tarifa.module';
 import { TipoTarifaModule } from './tipo-tarifa/tipo-tarifa.module';
+import { Propiedad } from './propiedades/entities/propiedad.entity';
 
 @Module({
   imports: [
@@ -30,6 +31,21 @@ import { TipoTarifaModule } from './tipo-tarifa/tipo-tarifa.module';
         autoLoadEntities: true,
         synchronize: false,
         entities: [TipoApartamento, Pais, Ciudad, Apartamento],
+      }),
+    }),
+    TypeOrmModule.forRootAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: (config: ConfigService) => ({
+        name: 'secondConnection',
+        type: 'mysql',
+        host: config.get('DB2_HOST'),
+        port: config.get<number>('DB2_PORT'),
+        username: config.get('DB2_USERNAME'),
+        password: config.get('DB2_PASSWORD'),
+        database: config.get('DB2_NAME'),
+        synchronize: true,
+        entities: [Propiedad]
       }),
     }),
     PaisModule,
