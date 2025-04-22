@@ -13,6 +13,11 @@ async function bootstrap() {
     new FastifyAdapter(),
   );
 
+  const multipart = require('@fastify/multipart');
+  app.register(multipart, {
+    limits: { fileSize: 1_000_000 },
+  });
+
   // Configuración de Swagger
   const config = new DocumentBuilder()
     .setTitle('API de Apartamentos')

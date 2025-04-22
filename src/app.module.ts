@@ -13,6 +13,8 @@ import { TarifaModule } from './tarifa/tarifa.module';
 import { TipoTarifaModule } from './tipo-tarifa/tipo-tarifa.module';
 import { Propiedad } from './propiedad/entities/propiedad.entity';
 import { PropiedadModule } from './propiedad/propiedad.module';
+import { Tarifa } from './tarifa/entities/tarifa.entity';
+import { TipoTarifa } from './tipo-tarifa/entities/tipo-tarifa.entity';
 
 @Module({
   imports: [
@@ -30,7 +32,7 @@ import { PropiedadModule } from './propiedad/propiedad.module';
         password: config.get('DB_PASSWORD'),
         database: config.get('DB_NAME'),
         synchronize: false,
-        entities: [TipoApartamento, Pais, Ciudad, Apartamento],
+        entities: [TipoApartamento, Pais, Ciudad, Apartamento, Tarifa, TipoTarifa],
       }),
     }),
     TypeOrmModule.forRootAsync({
