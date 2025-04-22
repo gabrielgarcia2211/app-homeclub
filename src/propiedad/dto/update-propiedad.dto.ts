@@ -13,7 +13,6 @@ export class UpdatePropiedadDto {
     example: 'https://example.com/imagen.jpg',
     description: 'URL de la imagen del propiedad',
   })
-  @IsString({ message: 'La URL de la imagen debe ser una cadena de texto' })
   imagen_url: string;
 
   @ApiProperty({

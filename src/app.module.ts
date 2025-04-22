@@ -15,6 +15,7 @@ import { Propiedad } from './propiedad/entities/propiedad.entity';
 import { PropiedadModule } from './propiedad/propiedad.module';
 import { Tarifa } from './tarifa/entities/tarifa.entity';
 import { TipoTarifa } from './tipo-tarifa/entities/tipo-tarifa.entity';
+import { FilesModule } from './common/file/files.module';
 
 @Module({
   imports: [
@@ -57,6 +58,7 @@ import { TipoTarifa } from './tipo-tarifa/entities/tipo-tarifa.entity';
     TarifaModule,
     TipoTarifaModule,
     PropiedadModule,
+    FilesModule,
   ],
 })
 export class AppModule {}

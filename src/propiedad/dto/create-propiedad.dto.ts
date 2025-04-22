@@ -11,9 +11,8 @@ export class CreatePropiedadDto {
 
   @ApiProperty({
     example: 'https://example.com/imagen.jpg',
-    description: 'URL de la imagen del propiedad',
+    description: 'Archivo de la imagen del propiedad',
   })
-  @IsString({ message: 'La URL de la imagen debe ser una cadena de texto' })
   imagen_url: string;
 
   @ApiProperty({

@@ -7,17 +7,28 @@ import {
   Param,
   Delete,
   ParseIntPipe,
+  Req,
+  BadRequestException,
 } from '@nestjs/common';
 
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
-import { successResponse } from 'src/common/helpers/response';
+import { successResponse, isFilePart } from 'src/common/helpers/response';
 import { PropiedadService } from './propiedad.service';
 import { CreatePropiedadDto } from './dto/create-propiedad.dto';
 import { UpdatePropiedadDto } from './dto/update-propiedad.dto';
+import { FastifyRequest } from 'fastify';
+
+import { plainToInstance } from 'class-transformer';
+import { validate } from 'class-validator';
+
+
 
 @ApiTags('propiedades')
 @Controller('propiedades')
 export class PropiedadController {
+
+  private readonly allowedTypes = ['image/jpeg', 'image/png', 'image/gif'];
+
   constructor(private readonly propiedadService: PropiedadService) {}
 
   @Post()
@@ -26,12 +37,42 @@ export class PropiedadController {
     status: 201,
     description: 'Propiedad creado correctamente.',
   })
-  create(@Body() createPropiedadDto: CreatePropiedadDto) {
-    return this.propiedadService
-      .create(createPropiedadDto)
-      .then((data) =>
-        successResponse('Propiedad creado correctamente', data),
+  async create(@Req() req: FastifyRequest) {
+    const parts = req.parts();
+    const dtoPayload: Record<string, any> = {};
+    let imageBuffer: Buffer | null = null;
+    let imageFilename: string | null = null;
+
+    for await (const part of parts) {
+      if (isFilePart(part)) {
+        // Validate file type
+        if (!this.allowedTypes.includes(part.mimetype)) {
+          throw new BadRequestException('El archivo debe ser una imagen (JPEG, PNG, GIF)');
+        }
+        imageBuffer = await part.toBuffer();
+        imageFilename = part.filename;
+        dtoPayload['imagen_url'] = [imageBuffer, imageFilename];
+      } else {
+        if (part.fieldname === 'codigo') {
+          dtoPayload[part.fieldname] = Number(part.value);
+        } else {
+          dtoPayload[part.fieldname] = part.value;
+        }
+      }
+    }
+
+    // Transform & validate
+    const dto = plainToInstance(CreatePropiedadDto, dtoPayload);
+    const errors = await validate(dto);
+    if (errors.length) {
+      throw new BadRequestException(
+        errors.map((e) => Object.values(e.constraints || {})).flat(),
       );
+    }
+
+    return this.propiedadService
+      .create(dto)
+      .then((data) => successResponse('Propiedad creada correctamente', data));
   }
 
   @Get()
@@ -60,12 +101,44 @@ export class PropiedadController {
     description: 'Propiedad actualizado correctamente',
   })
   @ApiResponse({ status: 404, description: 'Propiedad no encontrado' })
-  update(
+  async update(
     @Param('id', ParseIntPipe) id: number,
-    @Body() updatePropiedadDto: UpdatePropiedadDto,
+    @Req() req: FastifyRequest,
   ) {
+    const parts = req.parts();
+    const dtoPayload: Record<string, any> = {};
+    let imageBuffer: Buffer | null = null;
+    let imageFilename: string | null = null;
+
+    for await (const part of parts) {
+      if (isFilePart(part)) {
+        // Validate file type
+        if (!this.allowedTypes.includes(part.mimetype)) {
+          throw new BadRequestException('El archivo debe ser una imagen (JPEG, PNG, GIF)');
+        }
+        imageBuffer = await part.toBuffer();
+        imageFilename = part.filename;
+        dtoPayload['imagen_url'] = [imageBuffer, imageFilename];
+      } else {
+        if (part.fieldname === 'codigo') {
+          dtoPayload[part.fieldname] = Number(part.value);
+        } else {
+          dtoPayload[part.fieldname] = part.value;
+        }
+      }
+    }
+
+    // Transform & validate
+    const dto = plainToInstance(UpdatePropiedadDto, dtoPayload);
+    const errors = await validate(dto);
+    if (errors.length) {
+      throw new BadRequestException(
+        errors.map((e) => Object.values(e.constraints || {})).flat(),
+      );
+    }
+
     return this.propiedadService
-      .update(id, updatePropiedadDto)
+      .update(id, dto)
       .then((data) =>
         successResponse('Propiedad actualizado correctamente', data),
       );
