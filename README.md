@@ -37,6 +37,41 @@ Una vez que la aplicación esté en ejecución, puedes acceder a la documentaci�
 
 Esta documentación interactiva te permite explorar y probar los endpoints de la API directamente desde tu navegador.
 
+
+### Configurar archivo de entorno
+
+Copia el archivo de ejemplo `.env` y personaliza los valores:
+
+```bash
+cp .env.example .env
+```
+
+Ejemplo de configuración para MySQL:
+
+```
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_USERNAME=root
+DB_PASSWORD=
+DB_NAME=homeclub_db
+
+DB2_HOST=127.0.0.1
+DB2_PORT=3306
+DB2_USERNAME=root
+DB2_PASSWORD=
+DB2_NAME=homeclub_propiedades_db
+```
+
+---
+
+## Base de Datos
+
+Antes de iniciar la aplicación, asegúrate de crear la base de datos ejecutando el script SQL proporcionado. 
+
+1. Crea la base de datos `bd1` utilizando el script ubicado en 📄 [Script](./doc/homeclub.sql)
+2. La tabla de la base de datos `bd2` se cargará de forma asíncrona al iniciar la aplicación.
+
+
 ## Endpoints
 
 ---
@@ -78,8 +113,8 @@ Esta documentación interactiva te permite explorar y probar los endpoints de la
 ```json
 {
   "id_apartamento": 1,
-  "fecha_inicio": 2025-03-01,
-  "fecha_fin": 2025-03-31,
+  "fecha_inicio": "2025-03-01",
+  "fecha_fin": "2025-03-31",
   "precio": 5000,
   "id_tipo_tarifa": 1
 }
@@ -138,7 +173,7 @@ Esta documentación interactiva te permite explorar y probar los endpoints de la
 
 Puedes descargar la documentación completa desde el siguiente enlace:
 
-📄 [Descargar colección de Postman](./doc/HomeClub.postman_collection)
+📄 [Descargar colección de Postman](./doc/HomeClub.postman_collection.json)
 
 ## License
 
