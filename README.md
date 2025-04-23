@@ -175,9 +175,9 @@ Diagrama
 - Reemplaza `{id}` con el ID correspondiente del recurso que deseas modificar o eliminar.
 
 
-## Descargar Documentación
+## Descargar Collection
 
-Puedes descargar la documentación completa desde el siguiente enlace:
+Puedes descargar la collection completa desde el siguiente enlace:
 
 📄 [Descargar colección de Postman](./doc/HomeClub.postman_collection.json)
 
