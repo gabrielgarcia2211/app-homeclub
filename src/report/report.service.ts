@@ -27,11 +27,27 @@ export class ReportService {
 
     let query = this.listAll(latitud, longitud);
     query = this.getTypes(query, tiposArray);
+    query = this.getFilterPrice(query, precioMinimo, precioMaximo, tiposArray);
     query = this.pagination(query, pagina, limite);
-
     const propiedadesDb1 = await query.getRawMany();
 
-    console.log('propiedadesDb1', propiedadesDb1);
+    // logica final para obtener los codigos de las propiedades
+    const codigos = propiedadesDb1.map((p) => p.apto_id);
+    const propiedadesDb2 = await this.getPropiedadesDb2(codigos);
+    const mapDb2 = Object.fromEntries(propiedadesDb2.map((p) => [p.codigo, p]));
+
+    const propiedadesFinal = propiedadesDb1.map((p) => ({
+      ...p,
+      descripcion: mapDb2[p.apto_id]?.descripcion || null,
+      imagen_url: mapDb2[p.apto_id]?.imagen_url || null,
+    }));
+
+    return {
+      pagina,
+      limite,
+      total: propiedadesFinal.length,
+      propiedades: propiedadesFinal,
+    };
   }
 
   listAll(latitud: number, longitud: number) {
@@ -44,7 +60,9 @@ export class ReportService {
         'apto.latitud',
         'apto.longitud',
         'apto.estado',
-        'tipo.nombre AS tipo',
+        'tipo.nombre AS tipo_apartamento',
+        'tipoTarifa.nombre AS tipo_tarifa',
+        'tarifa.precio',
         // Calcula la distancia con la fórmula de Haversine
         `(
         6371 * ACOS(
@@ -57,10 +75,16 @@ export class ReportService {
       ) AS distancia`,
       ])
       .from('apartamento', 'apto')
-      .leftJoin(
+      .innerJoin(
         'tipo_apartamento',
         'tipo',
         'apto.id_tipo_apartamento = tipo.id',
+      )
+      .innerJoin('tarifa', 'tarifa', 'apto.id = tarifa.id_apartamento')
+      .innerJoin(
+        'tipo_tarifa',
+        'tipoTarifa',
+        'tarifa.id_tipo_tarifa = tipoTarifa.id',
       )
       .setParameters({ latitud, longitud })
       .where('apto.estado = :estado', { estado: 'activo' })
@@ -76,5 +100,54 @@ export class ReportService {
       return query.andWhere('tipo.nombre IN (:...tipos)', { tipos: tipos });
     }
     return query;
+  }
+
+  getFilterPrice(
+    query: any,
+    precioMinimo: number,
+    precioMaximo: number,
+    tiposArray: string[],
+  ) {
+    if (tiposArray.includes('turistico')) {
+      query.andWhere('tipoTarifa.nombre = :tipoTarifaTur', {
+        tipoTarifaTur: 'diaria',
+      });
+      if (precioMinimo != null) {
+        query.andWhere('tarifa.precio >= :precioMin', {
+          precioMin: precioMinimo,
+        });
+      }
+      if (precioMaximo != null) {
+        query.andWhere('tarifa.precio <= :precioMax', {
+          precioMax: precioMaximo,
+        });
+      }
+    } else if (tiposArray.includes('corporativo')) {
+      query.andWhere('tipoTarifa.nombre = :tipoTarifaCorp', {
+        tipoTarifaCorp: 'mensual',
+      });
+
+      if (precioMinimo != null) {
+        query.andWhere('tarifa.precio >= :precioMin', {
+          precioMin: precioMinimo,
+        });
+      }
+      if (precioMaximo != null) {
+        query.andWhere('tarifa.precio <= :precioMax', {
+          precioMax: precioMaximo,
+        });
+      }
+    }
+
+    return query;
+  }
+
+  async getPropiedadesDb2(codigos: string[]) {
+    return await this.db2
+      .createQueryBuilder()
+      .select(['codigo', 'descripcion', 'imagen_url'])
+      .from('propiedades', 'p')
+      .where('p.codigo IN (:...codigos)', { codigos })
+      .getRawMany();
   }
 }
