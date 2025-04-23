@@ -5,25 +5,10 @@
 [circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
 [circleci-url]: https://circleci.com/gh/nestjs/nest
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+# HomeClub API
 
-## Description
+API para gestionar apartamentos, tarifas y propiedades.
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
 
 ## Project setup
 
@@ -31,7 +16,7 @@
 $ npm install
 ```
 
-## Compile and run the project
+## Compilacion y ejecucion
 
 ```bash
 # development
@@ -44,57 +29,117 @@ $ npm run start:dev
 $ npm run start:prod
 ```
 
-## Run tests
+## API Endpoint
 
-```bash
-# unit tests
-$ npm run test
+Una vez que la aplicación esté en ejecución, puedes acceder a la documentación de la API generada por Swagger en:
 
-# e2e tests
-$ npm run test:e2e
+👉 [http://127.0.0.1:3000/api](http://127.0.0.1:3000/api)
 
-# test coverage
-$ npm run test:cov
+Esta documentación interactiva te permite explorar y probar los endpoints de la API directamente desde tu navegador.
+
+## Endpoints
+
+---
+
+### 🏢 Apartamentos
+
+| Método  | Ruta                                | Descripción                      |
+|---------|-------------------------------------|----------------------------------|
+| GET     | `http://127.0.0.1:3000/apartamentos`| Obtener lista de apartamentos    |
+| POST    | `http://127.0.0.1:3000/apartamentos`| Crear nuevo apartamento          |
+| PATCH   | `http://127.0.0.1:3000/apartamentos/2`| Actualizar apartamento con ID 2  |
+| DELETE  | `http://127.0.0.1:3000/apartamentos/10`| Eliminar apartamento con ID 10  |
+
+#### Ejemplo de creación (`POST`)
+```json
+{
+  "nombre": "Nuevo apto",
+  "direccion": "Calle 13",
+  "id_tipo_apartamento": 1,
+  "id_ciudad": 1,
+  "latitud": 522.2,
+  "longitud": 521.36,
+  "estado": "activo"
+}
 ```
 
-## Deployment
+---
 
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
+### 💰 Tarifas
 
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
+| Método  | Ruta                             | Descripción                  |
+|---------|----------------------------------|------------------------------|
+| GET     | `http://127.0.0.1:3000/tarifas`  | Obtener lista de tarifas     |
+| POST    | `http://127.0.0.1:3000/tarifas`  | Crear nueva tarifa           |
+| PATCH   | `http://127.0.0.1:3000/tarifas/2`| Actualizar tarifa con ID 2   |
+| DELETE  | `http://127.0.0.1:3000/tarifas/2`| Eliminar tarifa con ID 2     |
 
-```bash
-$ npm install -g @nestjs/mau
-$ mau deploy
+#### Ejemplo de creación (`POST`)
+```json
+{
+  "id_apartamento": 1,
+  "fecha_inicio": 2025-03-01,
+  "fecha_fin": 2025-03-31,
+  "precio": 5000,
+  "id_tipo_tarifa": 1
+}
 ```
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+---
 
-## Resources
+### 🏠 Propiedades
 
-Check out a few resources that may come in handy when working with NestJS:
+| Método  | Ruta                                | Descripción                        |
+|---------|-------------------------------------|------------------------------------|
+| GET     | `http://127.0.0.1:3000/propiedades` | Obtener lista de propiedades       |
+| POST    | `http://127.0.0.1:3000/propiedades` | Crear nueva propiedad              |
+| PATCH   | `http://127.0.0.1:3000/propiedades/{id}` | Actualizar propiedad con ID especificado |
+| DELETE  | `http://127.0.0.1:3000/propiedades/10`| Eliminar propiedad con ID 10  |
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+#### Ejemplo de creación (`POST`)
+**Content-Type:** `multipart/form-data`
 
-## Support
+| Campo        | Tipo   | Valor              |
+|--------------|--------|--------------------|
+| descripcion  | texto  | venta de muebles |
+| imagen_url   | archivo| *(opcional)*       |
+| codigo       | texto  | 1 (debe existir en apartamentos)           |
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+---
 
-## Stay in touch
+### 📊 Reportes
 
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+| Método  | Ruta                              | Descripción                     |
+|---------|-----------------------------------|---------------------------------|
+| GET     | `http://127.0.0.1:3000/reporte`   | Obtener lista de propiedades       |
+
+
+#### Parámetros de consulta (`GET`)
+
+| Parámetro      | Valor       | Descripción                     | Estado     |
+|----------------|-------------|---------------------------------|------------|
+| `latitud`      | `10`        | *(opcional)* Coordenada latitud | Deshabilitado |
+| `longitud`     | `20`        | *(opcional)* Coordenada longitud| Deshabilitado |
+| `tipos`        | `turistico` | *(opcional)* Tipo de reporte (`turistico | corporativo`) | Activo |
+| `precioMinimo` | `5000`      | *(opcional)* Precio mínimo      | Deshabilitado |
+| `precioMaximo` | `5000`      | *(opcional)* Precio máximo      | Deshabilitado |
+| `pagina`       | `1`         | *(opcional)* Número de página   | Activo     |
+| `limite`       | `20`        | *(opcional)* Límite de resultados por página | Activo |
+
+---
+
+## Notas
+
+- Asegúrate de tener el servidor corriendo en el puerto 3000.
+- Reemplaza `{id}` con el ID correspondiente del recurso que deseas modificar o eliminar.
+
+
+## Descargar Documentación
+
+Puedes descargar la documentación completa desde el siguiente enlace:
+
+📄 [Descargar colección de Postman](./doc/HomeClub.postman_collection)
 
 ## License
 
 Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
-
-# app-homeclub
