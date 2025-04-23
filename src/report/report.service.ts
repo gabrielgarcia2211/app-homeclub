@@ -32,6 +32,15 @@ export class ReportService {
     const propiedadesDb1 = await query.getRawMany();
 
     // logica final para obtener los codigos de las propiedades
+    if (!propiedadesDb1 || propiedadesDb1.length === 0) {
+      return {
+        pagina,
+        limite,
+        total: 0,
+        propiedades: [],
+      };
+    }
+
     const codigos = propiedadesDb1.map((p) => p.apto_id);
     const propiedadesDb2 = await this.getPropiedadesDb2(codigos);
     const mapDb2 = Object.fromEntries(propiedadesDb2.map((p) => [p.codigo, p]));
@@ -50,8 +59,8 @@ export class ReportService {
     };
   }
 
-  listAll(latitud: number, longitud: number) {
-    return this.db1
+  listAll(latitud?: number, longitud?: number) {
+    const query = this.db1
       .createQueryBuilder()
       .select([
         'apto.id',
@@ -63,16 +72,17 @@ export class ReportService {
         'tipo.nombre AS tipo_apartamento',
         'tipoTarifa.nombre AS tipo_tarifa',
         'tarifa.precio',
-        // Calcula la distancia con la fórmula de Haversine
-        `(
-        6371 * ACOS(
-          COS(RADIANS(:latitud)) 
-          * COS(RADIANS(apto.latitud)) 
-          * COS(RADIANS(apto.longitud) - RADIANS(:longitud)) 
-          + SIN(RADIANS(:latitud)) 
-          * SIN(RADIANS(apto.latitud))
-        )
-      ) AS distancia`,
+        latitud != null && longitud != null
+          ? `(
+          6371 * ACOS(
+            COS(RADIANS(:latitud)) 
+            * COS(RADIANS(apto.latitud)) 
+            * COS(RADIANS(apto.longitud) - RADIANS(:longitud)) 
+            + SIN(RADIANS(:latitud)) 
+            * SIN(RADIANS(apto.latitud))
+          )
+        ) AS distancia`
+          : 'NULL AS distancia',
       ])
       .from('apartamento', 'apto')
       .innerJoin(
@@ -86,9 +96,13 @@ export class ReportService {
         'tipoTarifa',
         'tarifa.id_tipo_tarifa = tipoTarifa.id',
       )
-      .setParameters({ latitud, longitud })
-      .where('apto.estado = :estado', { estado: 'activo' })
-      .orderBy('distancia', 'ASC');
+      .where('apto.estado = :estado', { estado: 'activo' });
+
+    if (latitud != null && longitud != null) {
+      query.setParameters({ latitud, longitud }).orderBy('distancia', 'ASC');
+    }
+
+    return query;
   }
 
   pagination(query: any, pagina: number, limite: number) {
