@@ -71,6 +71,12 @@ Antes de iniciar la aplicación, asegúrate de crear la base de datos ejecutando
 1. Crea la base de datos `bd1` utilizando el script ubicado en 📄 [Script](./doc/homeclub.sql)
 2. La tabla de la base de datos `bd2` se cargará de forma asíncrona al iniciar la aplicación.
 
+Diagrama
+
+<p align="center">
+  <img src="./doc/homeclub_db.png" alt="Diagrama de la Base de Datos" />
+</p>
+
 
 ## Endpoints
 
