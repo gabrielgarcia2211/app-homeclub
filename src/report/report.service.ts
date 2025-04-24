@@ -18,6 +18,7 @@ export class ReportService {
       precioMaximo,
       pagina = 1,
       limite = 10,
+      ciudad,
     } = data;
 
     let tiposArray = [];
@@ -26,6 +27,7 @@ export class ReportService {
     }
 
     let query = this.listAll(latitud, longitud);
+    query = this.getCity(query, ciudad);
     query = this.getTypes(query, tiposArray);
     query = this.getFilterPrice(query, precioMinimo, precioMaximo, tiposArray);
     query = this.pagination(query, pagina, limite);
@@ -153,6 +155,13 @@ export class ReportService {
       }
     }
 
+    return query;
+  }
+
+  getCity(query: any, ciudad: number) {
+    if (ciudad) {
+      return query.andWhere('apto.id_ciudad = :ciudad', { ciudad });
+    }
     return query;
   }
 
